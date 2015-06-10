@@ -31,32 +31,54 @@ The dataset is stored in a comma-separated-value (CSV) file and there are a tota
 ##1. Loading Data and Pre-processing
 
 The target data is a CSV file containing NA values so two versions of the raw data are processed and kept. rawD contains NA values while raw has NA values omitted.
-```{r}
+
+```r
 rawD <- read.csv("activity.csv")
 raw <- na.omit(rawD)
 raw$date <- as.Date(raw$date, "%Y-%m-%d")
 ```
 ##2. What is the mean total number of steps taken per day?
 In this case the data source is 'raw' and we aggregate 'steps' against 'date' using sum.
-```{r totalSteps}
+
+```r
 df <- aggregate ( steps ~ date, data=raw, sum, na.rm=TRUE)
 hist(df$steps, breaks=seq(from=0, to=25000, by=1000), main = "Total steps per day", xlab = "steps", col = "green")
-mean(df$steps)
-median(df$steps)
+```
 
+![plot of chunk totalSteps](figure/totalSteps-1.png) 
+
+```r
+mean(df$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
+median(df$steps)
+```
+
+```
+## [1] 10765
 ```
 ##3. What is the average daily activity pattern?
 In this case we the data source is 'raw' and we aggregate 'steps' against 'interval' using mean.
-```{r averageActivity}
+
+```r
 df <- aggregate (steps ~ interval, data = raw, mean, na.rm=TRUE)
 plot( df$interval, df$steps, type = "l", xlab = "5-min Interval Number", 
      ylab = "Average Steps in Interval", main = "Average Number Steps Taken Per 5-min Interval", 
      col = "blue")
+```
 
+![plot of chunk averageActivity](figure/averageActivity-1.png) 
+
+```r
 maxInx <- which.max(df$steps)
 ```
 
-The maximum number of steps is   **`r format(round (df$steps[maxInx],2))`**  in interval  **`r df$interval[maxInx]`**
+The maximum number of steps is   **206.17**  in interval  **835**
 
 ##4. Inputing missing values
 
@@ -64,8 +86,8 @@ Note that there are a number of days/intervals where there are missing values (c
 
 The strategy we use is to replace NA values with the mean value of steps across all days for a given interval. To do this we create a lookup table which has the same number of days and intervals as the original data frame. We then search in the original data frame for NA values and replace with a value from the lookup table
 
-```{r fillNA}
 
+```r
 NApos <- is.na(rawD)
 countNA <- sum(NApos)
 lookup <- rep(df$steps,61)
@@ -73,18 +95,24 @@ lookup <- rep(df$steps,61)
 rawD[NApos, "steps"] <- lookup[NApos]
 df <- aggregate ( steps ~ date, data=rawD, sum)
 hist(df$steps, breaks=seq(from=0, to=25000, by=1000), main = "Total steps per day (NA values Replaced With Interval Means)", xlab = "steps", col = "magenta")
+```
+
+![plot of chunk fillNA](figure/fillNA-1.png) 
+
+```r
 m <- mean(df$steps)
 med <-median(df$steps)
 ```
-The total number of NA values in the original data was **`r countNA`**  
-The mean after NA replacement is  **`r format(round(m,2))`**   
-The median value after NA replacement is **`r format(signif(med,5))`**  
+The total number of NA values in the original data was **2304**  
+The mean after NA replacement is  **10766.19**   
+The median value after NA replacement is **10766**  
 The effect of NA replacement does not affect the mean and median values much.
 
 ##5. Are there differences in activity patterns between weekdays and weekends?
 In this case we use the 'rawD' data which contains NA values. We use the factor function to create a date factor variable dfactor which has two levels and add it as a column to 'rawD'. We then aggregate the modified rawD using 'steps' against 'interval' and 'dfactor'. We then plot the results using a lattice xy plot.
 
-```{r lattice}
+
+```r
 d <- as.Date(rawD$date)
 wkdays = c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')
 dfactor <- factor ( (weekdays(d) %in% wkdays)+1L, levels=1:2, labels=c('weekend','weekday'))
@@ -96,3 +124,5 @@ g <- xyplot(steps ~ interval | dayfactor, df, type = "l", layout = c(1, 2),
        xlab = "Interval", ylab = "Number of steps")
 print(g)
 ```
+
+![plot of chunk lattice](figure/lattice-1.png) 
