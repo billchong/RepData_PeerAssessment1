@@ -41,10 +41,14 @@ In this case the data source is 'raw' and we aggregate 'steps' against 'date' us
 ```{r totalSteps}
 df <- aggregate ( steps ~ date, data=raw, sum, na.rm=TRUE)
 hist(df$steps, breaks=seq(from=0, to=25000, by=1000), main = "Total steps per day", xlab = "steps", col = "green")
-mean(df$steps)
-median(df$steps)
+m <- mean(df$steps)
+med <- median(df$steps)
 
 ```
+The mean number of steps per day is   **`r format(round(m,2))`**  
+The median number of steps per day is **`r format(signif(med,5))`**
+
+
 ##3. What is the average daily activity pattern?
 In this case we the data source is 'raw' and we aggregate 'steps' against 'interval' using mean.
 ```{r averageActivity}

@@ -48,20 +48,13 @@ hist(df$steps, breaks=seq(from=0, to=25000, by=1000), main = "Total steps per da
 ![plot of chunk totalSteps](figure/totalSteps-1.png) 
 
 ```r
-mean(df$steps)
+m <- mean(df$steps)
+med <- median(df$steps)
 ```
+The mean number of steps per day is   **10766.19**  
+The median number of steps per day is **10765**
 
-```
-## [1] 10766.19
-```
 
-```r
-median(df$steps)
-```
-
-```
-## [1] 10765
-```
 ##3. What is the average daily activity pattern?
 In this case we the data source is 'raw' and we aggregate 'steps' against 'interval' using mean.
 
